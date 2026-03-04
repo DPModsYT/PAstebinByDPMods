@@ -19,6 +19,7 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 // DOM Elements
+const loadingScreen = document.getElementById('loadingScreen');
 const loginSection = document.getElementById('loginSection');
 const appSection = document.getElementById('appSection');
 const cardsGrid = document.getElementById('cardsGrid');
@@ -158,13 +159,14 @@ tabCreate.addEventListener('click', () => {
 });
 btnAddNew.addEventListener('click', () => tabCreate.click());
 
-// --- 5. Auth State (Updated for ANiK555 formatting) ---
+// --- 5. Auth State (With Loader Fix) ---
 onAuthStateChanged(auth, (user) => {
+    // Hide the loader once Firebase checks your status
+    loadingScreen.classList.add('hidden');
+    
     if (user) {
         currentUserUid = user.uid;
-        
         let rawName = user.email.split('@')[0];
-        // Capitalization rule
         if (rawName.toLowerCase() === 'anik555') {
             rawName = 'ANiK555';
         }
@@ -175,8 +177,8 @@ onAuthStateChanged(auth, (user) => {
         loadMetadata();
     } else {
         currentUserUid = null;
-        loginSection.classList.remove('hidden');
         appSection.classList.add('hidden');
+        loginSection.classList.remove('hidden');
     }
 });
 
@@ -335,4 +337,7 @@ document.getElementById('loginBtn').addEventListener('click', () => {
     signInWithEmailAndPassword(auth, e, p).catch(err => alert("Login failed: " + err.message));
 });
 
-document.getElementById('logoutBtn').addEventListener('click', () => { signOut(auth); });
+document.getElementById('logoutBtn').addEventListener('click', () => { 
+    loadingScreen.classList.remove('hidden'); // Show loader briefly on logout to prevent flash
+    signOut(auth); 
+});
