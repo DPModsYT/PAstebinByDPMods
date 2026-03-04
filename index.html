@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Endpoint Manager</title>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #0ea5e9;
+        }
+        
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #0f172a, #1e1b4b); 
+            color: #f8fafc; 
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .glass-panel { 
+            width: 100%;
+            max-width: 600px; 
+            background: var(--glass-bg); 
+            padding: 2.5rem; 
+            border-radius: 16px; 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 { margin-top: 0; font-weight: 500; letter-spacing: 0.5px; }
+
+        input, textarea, button { 
+            width: 100%; 
+            margin-bottom: 1.25rem; 
+            padding: 0.875rem; 
+            border-radius: 8px; 
+            border: 1px solid var(--glass-border); 
+            background: rgba(0, 0, 0, 0.2); 
+            color: #fff; 
+            box-sizing: border-box; 
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus { border-color: var(--accent); }
+        
+        textarea { height: 180px; font-family: 'Courier New', Courier, monospace; resize: vertical; }
+
+        button { 
+            background: var(--accent); 
+            cursor: pointer; 
+            font-weight: 600; 
+            border: none; 
+            transition: transform 0.2s, opacity 0.2s; 
+        }
+
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:active { transform: translateY(1px); }
+
+        .hidden { display: none !important; }
+
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        
+        #logoutBtn { width: auto; background: #ef4444; margin: 0; padding: 0.5rem 1rem; font-size: 0.875rem; }
+
+        #linkContainer { 
+            background: rgba(16, 185, 129, 0.1); 
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 1rem; 
+            border-radius: 8px; 
+            margin-top: 1rem; 
+            word-break: break-all; 
+        }
+        
+        a { color: #38bdf8; text-decoration: none; font-weight: 500; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="glass-panel">
+    <div id="loginSection">
+        <h2>Authentication Required</h2>
+        <input type="email" id="email" placeholder="Admin Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="loginBtn">Secure Login</button>
+    </div>
+
+    <div id="dashboardSection" class="hidden">
+        <div class="header-flex">
+            <h2>JSON Data Manager</h2>
+            <button id="logoutBtn">Logout</button>
+        </div>
+        
+        <input type="text" id="endpointName" placeholder="Endpoint Name (e.g., app_config, users)">
+        <textarea id="jsonInput" placeholder='{
+  "status": "success",
+  "version": "1.0",
+  "features": ["auth", "database"]
+}'></textarea>
+        <button id="saveBtn">Deploy to Realtime Database</button>
+
+        <div id="linkContainer" class="hidden">
+            <strong>🚀 Live Raw JSON Link:</strong><br>
+            <a id="rawLink" href="#" target="_blank"></a>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
