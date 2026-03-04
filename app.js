@@ -3,15 +3,16 @@ import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 // ⚠️ REPLACE THIS ENTIRE OBJECT WITH YOUR FIREBASE CONFIG ⚠️
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+ const firebaseConfig = {
+    apiKey: "AIzaSyCYuvJy2B54DCF0XfjP0nkLKBrxDnR5S28",
+    authDomain: "gamer-aadil.firebaseapp.com",
+    databaseURL: "https://gamer-aadil.firebaseio.com",
+    projectId: "gamer-aadil",
+    storageBucket: "gamer-aadil.firebasestorage.app",
+    messagingSenderId: "420652281966",
+    appId: "1:420652281966:web:4867f1a0a767a9e46af67f",
+    measurementId: "G-XKLJ4RH5D2"
+  };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
