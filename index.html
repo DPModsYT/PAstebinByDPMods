@@ -3,180 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure JSON Manager</title>
+    <title>JSON Admin Panel</title>
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --accent: #0ea5e9;
+            --glass-bg: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-hover: rgba(255, 255, 255, 0.12);
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --bg-grad-1: #0f172a;
+            --bg-grad-2: #1e1b4b;
         }
         
         body { 
             font-family: system-ui, -apple-system, sans-serif; 
-            background: linear-gradient(135deg, #0f172a, #1e1b4b); 
-            color: #f8fafc; 
+            background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2)); 
+            background-attachment: fixed;
+            color: var(--text-main); 
             min-height: 100vh;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
+            padding: 2rem 1rem;
             box-sizing: border-box;
         }
 
-        .glass-panel { 
-            width: 100%;
-            max-width: 900px; 
-            background: var(--glass-bg); 
-            padding: 2.5rem; 
-            border-radius: 16px; 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
-        h2 { margin-top: 0; font-weight: 500; letter-spacing: 0.5px; }
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        header h1 { margin: 0; font-size: 1.8rem; color: var(--accent); font-weight: 600; text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3); }
+        .user-controls { display: flex; gap: 1rem; align-items: center; }
+        .user-badge { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; }
 
-        input, textarea, button { 
-            width: 100%; 
-            margin-bottom: 1.25rem; 
-            padding: 0.875rem; 
-            border-radius: 8px; 
-            border: 1px solid var(--glass-border); 
-            background: rgba(0, 0, 0, 0.2); 
-            color: #fff; 
-            box-sizing: border-box; 
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
+        /* Login Screen */
+        #loginSection { max-width: 400px; margin: 10vh auto; padding: 2rem; border-radius: 16px; text-align: center; }
+        #loginSection input { width: 100%; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; outline: none; }
+        #loginSection button { width: 100%; padding: 1rem; border-radius: 8px; background: var(--accent); color: #000; font-weight: bold; border: none; cursor: pointer; }
 
-        input:focus, textarea:focus { border-color: var(--accent); }
-        textarea { height: 250px; font-family: 'Courier New', Courier, monospace; resize: vertical; }
+        /* Navigation Tabs */
+        .tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; }
+        .tab-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0.5rem 1rem; border-radius: 8px; transition: 0.3s; }
+        .tab-btn.active { color: var(--accent); background: var(--glass-bg); font-weight: 600; }
+        .tab-btn:hover:not(.active) { color: var(--text-main); }
 
-        button { 
-            background: var(--accent); 
-            cursor: pointer; 
-            font-weight: 600; 
-            border: none; 
-            transition: transform 0.2s, opacity 0.2s; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
+        .add-btn { background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; margin-left: auto; display: flex; align-items: center; gap: 5px; }
+        
+        /* Search Bar */
+        .search-bar { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; }
+        .search-bar input { background: transparent; border: none; color: white; outline: none; width: 60%; font-size: 1rem; }
+        .search-bar input::placeholder { color: var(--text-muted); }
+        .total-count { color: var(--text-muted); font-size: 0.9rem; }
 
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        button:active { transform: translateY(1px); }
+        /* Cards Grid */
+        .grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        .card { padding: 1.25rem; border-radius: 12px; transition: transform 0.2s; }
+        .card:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        
+        .card-header { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: 0.5px; }
+        
+        .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .action-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
+        .action-btn:hover { background: var(--glass-hover); }
+        .btn-visit:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-delete:hover { border-color: var(--danger); color: var(--danger); }
+        .btn-public { background: var(--accent); color: #000; border: none; margin-left: auto; font-weight: 600; }
+
+        .card-meta { display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); padding-top: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+        .meta-item { display: flex; align-items: center; gap: 6px; }
+
+        /* Editor Section */
+        #editorSection { padding: 2rem; border-radius: 16px; }
+        #editorSection input, #editorSection textarea { width: 100%; margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; font-size: 1rem; font-family: 'Courier New', monospace; box-sizing: border-box; }
+        #editorSection input:focus, #editorSection textarea:focus { outline: none; border-color: var(--accent); }
+        #editorSection textarea { height: 300px; resize: vertical; }
+        .save-btn { background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 1rem; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; }
 
         .hidden { display: none !important; }
-
-        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        #logoutBtn { width: auto; background: #ef4444; margin: 0; padding: 0.5rem 1rem; font-size: 0.875rem; }
-
-        /* Dashboard Layout */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 2rem;
-        }
-
-        .endpoint-list {
-            background: rgba(0,0,0,0.2);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            padding: 1rem;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .endpoint-item {
-            background: var(--glass-bg);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.75rem;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: 0.2s;
-        }
-
-        .endpoint-item:hover { border-color: var(--accent); }
-        .endpoint-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 6px; word-break: break-all; color: #38bdf8;}
-        .endpoint-meta { display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; align-items: center;}
-        .meta-group { display: flex; align-items: center; gap: 4px; }
-
-        .link-box { 
-            background: rgba(16, 185, 129, 0.1); 
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            padding: 1rem; 
-            border-radius: 8px; 
-            margin-top: 1rem; 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .link-text-area { overflow: hidden; }
-        a { color: #38bdf8; text-decoration: none; font-weight: 500; word-break: break-all; }
-        a:hover { text-decoration: underline; }
-
-        #copyBtn { width: auto; margin: 0; background: #10b981; padding: 0.5rem 1rem; font-size: 0.875rem; }
-
         svg { width: 16px; height: 16px; fill: currentColor; }
-
-        @media (max-width: 768px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .link-box { flex-direction: column; align-items: flex-start; }
-        }
     </style>
 </head>
 <body>
 
-<div class="glass-panel">
-    <div id="loginSection">
-        <h2>Authentication Required</h2>
-        <input type="email" id="email" placeholder="Email Address">
+<div class="container">
+    <div id="loginSection" class="glass">
+        <h2 style="margin-top: 0;">Admin Access</h2>
+        <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Password">
-        <button id="loginBtn">Secure Login</button>
+        <button id="loginBtn">Login</button>
     </div>
 
-    <div id="dashboardSection" class="hidden">
-        <div class="header-flex">
-            <h2>JSON Workspace</h2>
-            <button id="logoutBtn">Logout</button>
+    <div id="appSection" class="hidden">
+        <header>
+            <h1>JSON Manager</h1>
+            <div class="user-controls">
+                <div class="glass user-badge" id="userEmailBadge">admin@admin.com</div>
+                <button id="logoutBtn" class="action-btn" style="border-color: var(--danger); color: var(--danger);">Logout</button>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" id="tabMyPastes">My Endpoints</button>
+            <button class="tab-btn" id="tabCreate">Editor</button>
+            <button class="add-btn" id="btnAddNew">
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> New JSON
+            </button>
+        </nav>
+
+        <div id="viewList">
+            <div class="search-bar glass">
+                <input type="text" id="searchInput" placeholder="Search endpoints...">
+                <div class="total-count" id="totalCount">Total: 0 endpoints</div>
+            </div>
+            <div class="grid" id="cardsGrid">
+                </div>
         </div>
-        
-        <div class="dashboard-grid">
-            <div>
-                <h3 style="font-size: 1.1rem; margin-top: 0;">Your Endpoints</h3>
-                <div id="endpointsContainer" class="endpoint-list">
-                    <p style="font-size: 0.9rem; color: #94a3b8;">Loading...</p>
-                </div>
-            </div>
 
-            <div>
-                <input type="text" id="endpointName" placeholder="Endpoint Name (e.g., app_config)">
-                <textarea id="jsonInput" placeholder='{
-  "key": "value"
-}'></textarea>
-                <button id="saveBtn">
-                    <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-                    Deploy to Database
-                </button>
-
-                <div id="linkContainer" class="link-box hidden">
-                    <div class="link-text-area">
-                        <strong>🚀 Live Raw JSON Link:</strong><br>
-                        <a id="rawLink" href="#" target="_blank"></a>
-                    </div>
-                    <button id="copyBtn">
-                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                        Copy
-                    </button>
-                </div>
-            </div>
+        <div id="viewEditor" class="glass hidden" style="padding: 2rem;">
+            <h2 id="editorTitle" style="margin-top: 0; font-weight: 500;">Create New JSON</h2>
+            <input type="text" id="endpointName" placeholder="Endpoint Name (e.g., app_config)">
+            <textarea id="jsonInput" placeholder='{"key": "value"}'></textarea>
+            <button id="saveBtn" class="save-btn">Deploy to Database</button>
         </div>
     </div>
 </div>
