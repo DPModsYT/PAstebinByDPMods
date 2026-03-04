@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON Endpoint Manager</title>
+    <title>Secure JSON Manager</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.05);
@@ -26,7 +26,7 @@
 
         .glass-panel { 
             width: 100%;
-            max-width: 600px; 
+            max-width: 900px; 
             background: var(--glass-bg); 
             padding: 2.5rem; 
             border-radius: 16px; 
@@ -53,8 +53,7 @@
         }
 
         input:focus, textarea:focus { border-color: var(--accent); }
-        
-        textarea { height: 180px; font-family: 'Courier New', Courier, monospace; resize: vertical; }
+        textarea { height: 250px; font-family: 'Courier New', Courier, monospace; resize: vertical; }
 
         button { 
             background: var(--accent); 
@@ -62,6 +61,10 @@
             font-weight: 600; 
             border: none; 
             transition: transform 0.2s, opacity 0.2s; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
         }
 
         button:hover { opacity: 0.9; transform: translateY(-1px); }
@@ -70,20 +73,63 @@
         .hidden { display: none !important; }
 
         .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        
         #logoutBtn { width: auto; background: #ef4444; margin: 0; padding: 0.5rem 1rem; font-size: 0.875rem; }
 
-        #linkContainer { 
+        /* Dashboard Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .endpoint-list {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .endpoint-item {
+            background: var(--glass-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+
+        .endpoint-item:hover { border-color: var(--accent); }
+        .endpoint-title { font-weight: bold; font-size: 1.05rem; margin-bottom: 6px; word-break: break-all; color: #38bdf8;}
+        .endpoint-meta { display: flex; justify-content: space-between; font-size: 0.8rem; color: #94a3b8; align-items: center;}
+        .meta-group { display: flex; align-items: center; gap: 4px; }
+
+        .link-box { 
             background: rgba(16, 185, 129, 0.1); 
             border: 1px solid rgba(16, 185, 129, 0.3);
             padding: 1rem; 
             border-radius: 8px; 
             margin-top: 1rem; 
-            word-break: break-all; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
         }
         
-        a { color: #38bdf8; text-decoration: none; font-weight: 500; }
+        .link-text-area { overflow: hidden; }
+        a { color: #38bdf8; text-decoration: none; font-weight: 500; word-break: break-all; }
         a:hover { text-decoration: underline; }
+
+        #copyBtn { width: auto; margin: 0; background: #10b981; padding: 0.5rem 1rem; font-size: 0.875rem; }
+
+        svg { width: 16px; height: 16px; fill: currentColor; }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .link-box { flex-direction: column; align-items: flex-start; }
+        }
     </style>
 </head>
 <body>
@@ -91,28 +137,46 @@
 <div class="glass-panel">
     <div id="loginSection">
         <h2>Authentication Required</h2>
-        <input type="email" id="email" placeholder="Admin Email">
+        <input type="email" id="email" placeholder="Email Address">
         <input type="password" id="password" placeholder="Password">
         <button id="loginBtn">Secure Login</button>
     </div>
 
     <div id="dashboardSection" class="hidden">
         <div class="header-flex">
-            <h2>JSON Data Manager</h2>
+            <h2>JSON Workspace</h2>
             <button id="logoutBtn">Logout</button>
         </div>
         
-        <input type="text" id="endpointName" placeholder="Endpoint Name (e.g., app_config, users)">
-        <textarea id="jsonInput" placeholder='{
-  "status": "success",
-  "version": "1.0",
-  "features": ["auth", "database"]
-}'></textarea>
-        <button id="saveBtn">Deploy to Realtime Database</button>
+        <div class="dashboard-grid">
+            <div>
+                <h3 style="font-size: 1.1rem; margin-top: 0;">Your Endpoints</h3>
+                <div id="endpointsContainer" class="endpoint-list">
+                    <p style="font-size: 0.9rem; color: #94a3b8;">Loading...</p>
+                </div>
+            </div>
 
-        <div id="linkContainer" class="hidden">
-            <strong>🚀 Live Raw JSON Link:</strong><br>
-            <a id="rawLink" href="#" target="_blank"></a>
+            <div>
+                <input type="text" id="endpointName" placeholder="Endpoint Name (e.g., app_config)">
+                <textarea id="jsonInput" placeholder='{
+  "key": "value"
+}'></textarea>
+                <button id="saveBtn">
+                    <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                    Deploy to Database
+                </button>
+
+                <div id="linkContainer" class="link-box hidden">
+                    <div class="link-text-area">
+                        <strong>🚀 Live Raw JSON Link:</strong><br>
+                        <a id="rawLink" href="#" target="_blank"></a>
+                    </div>
+                    <button id="copyBtn">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        Copy
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
