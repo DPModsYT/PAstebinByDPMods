@@ -75,6 +75,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-view { animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Loading Screen */
+        #loadingScreen { text-align: center; margin-top: 25vh; color: var(--accent); font-size: 1.1rem; font-weight: 500; }
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
 
         /* Glassmorphism */
         .glass {
@@ -86,66 +92,15 @@
         }
 
         /* --- Header --- */
-        header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 1.5rem; 
-            gap: 1rem; 
-        }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; }
+        .header-left { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        header h1 { margin: 0; font-size: 1.5rem; color: var(--accent); font-weight: 600; text-shadow: 0 2px 10px rgba(var(--accent), 0.2); transition: color 0.3s; }
         
-        .header-left { 
-            display: flex; 
-            align-items: center; 
-            gap: 1rem; 
-            flex-wrap: wrap; 
-        }
-
-        header h1 { 
-            margin: 0; 
-            font-size: 1.5rem; 
-            color: var(--accent); 
-            font-weight: 600; 
-            text-shadow: 0 2px 10px rgba(var(--accent), 0.2); 
-            transition: color 0.3s; 
-        }
+        .user-controls { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; }
+        .user-badge { display: flex; align-items: center; gap: 8px; padding: 0.3rem 1rem 0.3rem 0.3rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
+        .profile-icon { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2); background: var(--glass-bg); }
         
-        /* User Controls & Profile Badge Fixes */
-        .user-controls { 
-            display: flex; 
-            gap: 0.8rem; 
-            align-items: center; 
-            flex-wrap: wrap;
-        }
-        
-        .user-badge { 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            padding: 0.3rem 1rem 0.3rem 0.3rem; /* Less padding on the left to hug the circular icon */
-            border-radius: 20px; 
-            font-size: 0.85rem; 
-            font-weight: 500;
-        }
-
-        .profile-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: var(--glass-bg); /* Fallback if transparent */
-        }
-        
-        .theme-picker { 
-            display: flex; 
-            gap: 8px; 
-            align-items: center; 
-            background: rgba(0,0,0,0.2); 
-            padding: 6px 12px; 
-            border-radius: 20px; 
-            border: 1px solid var(--glass-border); 
-        }
+        .theme-picker { display: flex; gap: 8px; align-items: center; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--glass-border); }
         .theme-dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
         .theme-dot:hover { transform: scale(1.2); }
         .theme-dot.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 8px currentColor; }
@@ -154,26 +109,29 @@
         .theme-dot[data-color="pink"] { background: #ec4899; color: #ec4899; }
         .theme-dot[data-color="green"] { background: #10b981; color: #10b981; }
 
-        /* Logout Button matching the 20px border-radius */
-        .btn-logout {
-            border-color: var(--danger) !important;
-            color: var(--danger) !important;
-            background: rgba(239, 68, 68, 0.05) !important;
-            flex-grow: 0;
-            min-height: 36px;
-            padding: 0.4rem 1rem;
-            font-weight: 500;
-            border-radius: 20px !important; /* Forces the pill shape */
-        }
-        .btn-logout:hover, .btn-logout:active {
-            background: var(--danger) !important;
-            color: #fff !important;
-        }
+        .btn-logout { border-color: var(--danger) !important; color: var(--danger) !important; background: rgba(239, 68, 68, 0.05) !important; flex: 0 0 auto !important; width: auto !important; min-height: 36px; padding: 0.4rem 1.2rem !important; font-weight: 500; border-radius: 20px !important; font-size: 0.85rem !important; }
+        .btn-logout:hover, .btn-logout:active { background: var(--danger) !important; color: #fff !important; }
 
-        /* Login Screen */
-        #loginSection { width: 100%; max-width: 400px; margin: 5vh auto; padding: 2rem 1.5rem; border-radius: 16px; text-align: center; box-sizing: border-box; }
-        #loginSection input { width: 100%; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.3) !important; border: 1px solid var(--glass-border) !important; color: white !important; outline: none; box-sizing: border-box; font-size: 1rem; -webkit-appearance: none; }
-        #loginSection button { width: 100%; padding: 1rem; border-radius: 8px; background: var(--accent); color: #000; font-weight: bold; border: none; cursor: pointer; font-size: 1rem; transition: var(--transition-smooth); }
+        /* Login Screen - Updated Button Sizing */
+        #loginSection { width: 100%; max-width: 400px; margin: 5vh auto; padding: 2.5rem 1.5rem; border-radius: 16px; text-align: center; box-sizing: border-box; }
+        #loginSection input { width: 100%; margin-bottom: 1.2rem; padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.3) !important; border: 1px solid var(--glass-border) !important; color: white !important; outline: none; box-sizing: border-box; font-size: 1rem; -webkit-appearance: none; }
+        
+        /* The Fixed, Smaller Login Button */
+        #loginSection button { 
+            width: 70%; /* Smaller width */
+            margin: 0 auto; /* Centered */
+            display: block; 
+            padding: 0.8rem 1rem; 
+            border-radius: 50px; /* Pill shaped */
+            background: var(--accent); 
+            color: #000; 
+            font-weight: bold; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            transition: var(--transition-smooth); 
+        }
+        #loginSection button:active { transform: scale(0.95); }
 
         /* Navigation Tabs */
         .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem; overflow-x: auto; white-space: nowrap; }
@@ -197,17 +155,8 @@
         .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
         .action-btn { background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: var(--text-main); padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 5px; flex-grow: 1; min-height: 40px; }
         .action-btn:hover { background: var(--glass-hover); border-color: rgba(255,255,255,0.3); }
-        
-        /* Delete Button explicit red styling */
-        .btn-delete {
-            background: rgba(239, 68, 68, 0.1) !important;
-            border-color: rgba(239, 68, 68, 0.3) !important;
-            color: var(--danger) !important;
-        }
-        .btn-delete:hover {
-            background: var(--danger) !important;
-            color: #fff !important;
-        }
+        .btn-delete { background: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.3) !important; color: var(--danger) !important; }
+        .btn-delete:hover { background: var(--danger) !important; color: #fff !important; }
         
         .card-meta { display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); padding-top: 1rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.8rem; }
         .meta-item { display: flex; align-items: center; gap: 6px; }
@@ -218,30 +167,9 @@
         .input-wrapper { display: flex; flex-direction: column; gap: 0.5rem; }
         .input-wrapper label { font-size: 0.9rem; color: var(--accent); font-weight: 500; padding-left: 4px; transition: color 0.3s; }
         
-        #editorSection input, #editorSection textarea { 
-            -webkit-appearance: none; 
-            width: 100%; 
-            padding: 1.2rem; 
-            border-radius: 12px; 
-            background-color: rgba(0,0,0,0.4) !important; 
-            border: 1px solid var(--glass-border) !important; 
-            color: #ffffff !important; 
-            font-size: 1rem; 
-            font-family: 'Courier New', monospace; 
-            box-sizing: border-box; 
-            outline: none; 
-            transition: var(--transition-smooth);
-            line-height: 1.5;
-        }
-        
+        #editorSection input, #editorSection textarea { -webkit-appearance: none; width: 100%; padding: 1.2rem; border-radius: 12px; background-color: rgba(0,0,0,0.4) !important; border: 1px solid var(--glass-border) !important; color: #ffffff !important; font-size: 1rem; font-family: 'Courier New', monospace; box-sizing: border-box; outline: none; transition: var(--transition-smooth); line-height: 1.5; }
         #editorSection input::placeholder, #editorSection textarea::placeholder { color: #94a3b8 !important; }
-        
-        #editorSection input:focus, #editorSection textarea:focus { 
-            border-color: var(--accent) !important; 
-            background-color: rgba(0,0,0,0.6) !important;
-            box-shadow: 0 0 0 3px rgba(var(--accent), 0.15);
-        }
-        
+        #editorSection input:focus, #editorSection textarea:focus { border-color: var(--accent) !important; background-color: rgba(0,0,0,0.6) !important; box-shadow: 0 0 0 3px rgba(var(--accent), 0.15); }
         #editorSection textarea { min-height: 200px; resize: none; overflow: hidden; }
 
         .save-btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 1.2rem; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; min-height: 54px; transition: var(--transition-smooth); margin-top: 1rem; }
@@ -252,20 +180,15 @@
         /* Mobile Adjustments */
         @media (max-width: 600px) {
             body { padding: 1rem 0.5rem; }
-            
             header { flex-direction: column; align-items: stretch; gap: 1.2rem; }
             .header-left { width: 100%; justify-content: space-between; }
             .user-controls { width: 100%; justify-content: space-between; }
-
             .tabs { padding-bottom: 0.5rem; scrollbar-width: none; }
             .tabs::-webkit-scrollbar { display: none; }
             .add-btn { position: fixed; bottom: 24px; right: 24px; border-radius: 50px; padding: 1.2rem; box-shadow: 0 8px 25px rgba(0,0,0, 0.4); z-index: 100; }
             .add-btn span { display: none; }
             .add-btn svg { width: 24px; height: 24px; margin: 0; }
-            
-            /* Forces 4 buttons perfectly inline */
             .action-btn { flex-basis: 22%; padding: 0.5rem 0.2rem; font-size: 0.8rem; }
-            
             #viewEditor { padding: 1.5rem 1rem; }
         }
     </style>
@@ -275,8 +198,14 @@
 <canvas id="particles-bg"></canvas>
 
 <div class="container">
-    <div id="loginSection" class="glass">
-        <h2 style="margin-top: 0;">Admin Access</h2>
+    
+    <div id="loadingScreen">
+        <div class="spinner"></div>
+        <div>Authenticating...</div>
+    </div>
+
+    <div id="loginSection" class="glass hidden">
+        <h2 style="margin-top: 0; margin-bottom: 1.5rem;">Admin Access</h2>
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Password">
         <button id="loginBtn">Secure Login</button>
