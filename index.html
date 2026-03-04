@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Manager</title>
+    <title>JSON App Manager</title>
     <style>
         /* Base Themes */
         :root {
@@ -110,6 +110,7 @@
             transition: color 0.3s; 
         }
         
+        /* User Controls & Profile Badge Fixes */
         .user-controls { 
             display: flex; 
             gap: 0.8rem; 
@@ -117,7 +118,24 @@
             flex-wrap: wrap;
         }
         
-        .user-badge { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; }
+        .user-badge { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            padding: 0.3rem 1rem 0.3rem 0.3rem; /* Less padding on the left to hug the circular icon */
+            border-radius: 20px; 
+            font-size: 0.85rem; 
+            font-weight: 500;
+        }
+
+        .profile-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--glass-bg); /* Fallback if transparent */
+        }
         
         .theme-picker { 
             display: flex; 
@@ -136,6 +154,7 @@
         .theme-dot[data-color="pink"] { background: #ec4899; color: #ec4899; }
         .theme-dot[data-color="green"] { background: #10b981; color: #10b981; }
 
+        /* Logout Button matching the 20px border-radius */
         .btn-logout {
             border-color: var(--danger) !important;
             color: var(--danger) !important;
@@ -144,6 +163,7 @@
             min-height: 36px;
             padding: 0.4rem 1rem;
             font-weight: 500;
+            border-radius: 20px !important; /* Forces the pill shape */
         }
         .btn-logout:hover, .btn-logout:active {
             background: var(--danger) !important;
@@ -174,10 +194,20 @@
         .card:hover { border-left-color: var(--accent); background: rgba(255,255,255,0.08); transform: translateY(-2px); }
         .card-header { font-size: 1.15rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: 0.5px; color: #fff; word-break: break-all; }
         
-        /* Updated Card Actions (Removed Public Button logic) */
         .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
         .action-btn { background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: var(--text-main); padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 5px; flex-grow: 1; min-height: 40px; }
         .action-btn:hover { background: var(--glass-hover); border-color: rgba(255,255,255,0.3); }
+        
+        /* Delete Button explicit red styling */
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            color: var(--danger) !important;
+        }
+        .btn-delete:hover {
+            background: var(--danger) !important;
+            color: #fff !important;
+        }
         
         .card-meta { display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); padding-top: 1rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.8rem; }
         .meta-item { display: flex; align-items: center; gap: 6px; }
@@ -226,7 +256,6 @@
             header { flex-direction: column; align-items: stretch; gap: 1.2rem; }
             .header-left { width: 100%; justify-content: space-between; }
             .user-controls { width: 100%; justify-content: space-between; }
-            .btn-logout { flex-grow: 0; }
 
             .tabs { padding-bottom: 0.5rem; scrollbar-width: none; }
             .tabs::-webkit-scrollbar { display: none; }
@@ -234,7 +263,7 @@
             .add-btn span { display: none; }
             .add-btn svg { width: 24px; height: 24px; margin: 0; }
             
-            /* Forces the 4 action buttons perfectly inline on mobile */
+            /* Forces 4 buttons perfectly inline */
             .action-btn { flex-basis: 22%; padding: 0.5rem 0.2rem; font-size: 0.8rem; }
             
             #viewEditor { padding: 1.5rem 1rem; }
@@ -267,7 +296,11 @@
             </div>
             
             <div class="user-controls">
-                <div class="glass user-badge" id="userEmailBadge">admin</div>
+                <div class="glass user-badge" id="userBadgeContainer">
+                    <img src="profile.png" alt="Profile" class="profile-icon" onerror="this.src='https://ui-avatars.com/api/?name=ANiK&background=random&color=fff'">
+                    <span id="userEmailBadge">ANiK555</span>
+                </div>
+                
                 <button id="logoutBtn" class="action-btn btn-logout">Logout</button>
             </div>
         </header>
