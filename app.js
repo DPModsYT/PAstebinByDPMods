@@ -25,53 +25,127 @@ const cardsGrid = document.getElementById('cardsGrid');
 const searchInput = document.getElementById('searchInput');
 const totalCount = document.getElementById('totalCount');
 const userEmailBadge = document.getElementById('userEmailBadge');
-
-// Tabs & Views
 const tabMyPastes = document.getElementById('tabMyPastes');
 const tabCreate = document.getElementById('tabCreate');
 const btnAddNew = document.getElementById('btnAddNew');
 const viewList = document.getElementById('viewList');
 const viewEditor = document.getElementById('viewEditor');
 const editorTitle = document.getElementById('editorTitle');
-
-// Editor Inputs
 const appNameInput = document.getElementById('appName');
 const jsonInputArea = document.getElementById('jsonInput');
 
 let currentUserUid = null;
 let currentApps = {}; 
 
-// --- Auto Resize Textarea Logic ---
-function autoResizeTextarea() {
-    jsonInputArea.style.height = 'auto'; // Reset height temporarily
-    jsonInputArea.style.height = (jsonInputArea.scrollHeight) + 'px'; // Set to required height
+// --- 1. Theme Switcher Logic ---
+const themeDots = document.querySelectorAll('.theme-dot');
+const savedTheme = localStorage.getItem('appTheme') || 'blue';
+document.body.setAttribute('data-theme', savedTheme);
+
+themeDots.forEach(dot => {
+    if(dot.dataset.color === savedTheme) dot.classList.add('active');
+    else dot.classList.remove('active');
+
+    dot.addEventListener('click', () => {
+        themeDots.forEach(d => d.classList.remove('active'));
+        dot.classList.add('active');
+        const color = dot.dataset.color;
+        document.body.setAttribute('data-theme', color);
+        localStorage.setItem('appTheme', color);
+        updateParticlesColor(color); // Sync particles with theme
+    });
+});
+
+// --- 2. Canvas Particle Background ---
+const canvas = document.getElementById('particles-bg');
+const ctx = canvas.getContext('2d');
+let particlesArray = [];
+let particleColor = 'rgba(56, 189, 248, 0.5)'; // Default Blue
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function updateParticlesColor(theme) {
+    if(theme === 'blue') particleColor = 'rgba(56, 189, 248, 0.4)';
+    if(theme === 'red') particleColor = 'rgba(239, 68, 68, 0.4)';
+    if(theme === 'pink') particleColor = 'rgba(236, 72, 153, 0.4)';
+    if(theme === 'green') particleColor = 'rgba(16, 185, 129, 0.4)';
+}
+updateParticlesColor(savedTheme);
+
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedY = Math.random() * -0.5 - 0.1; // Drift upward
+        this.speedX = (Math.random() - 0.5) * 0.5; // Slight sway
+    }
+    update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        // Reset if it goes off top
+        if (this.y < 0) {
+            this.y = canvas.height;
+            this.x = Math.random() * canvas.width;
+        }
+    }
+    draw() {
+        ctx.fillStyle = particleColor;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
 }
 
-// Listen for typing or pasting to resize dynamically
+function initParticles() {
+    particlesArray = [];
+    const numberOfParticles = Math.min(window.innerWidth / 10, 80); // Less particles on mobile
+    for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+    }
+}
+initParticles();
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+    }
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+
+// --- 3. Auto Resize Textarea Logic ---
+function autoResizeTextarea() {
+    jsonInputArea.style.height = 'auto'; 
+    jsonInputArea.style.height = (jsonInputArea.scrollHeight) + 'px'; 
+}
 jsonInputArea.addEventListener('input', autoResizeTextarea);
 
 
-// --- UI Navigation Logic ---
+// --- 4. UI Navigation Logic ---
 function switchTab(tab) {
     if(tab === 'list') {
         tabMyPastes.classList.add('active');
         tabCreate.classList.remove('active');
-        
         viewList.classList.remove('hidden');
         viewList.classList.add('animate-view');
-        
         viewEditor.classList.add('hidden');
         viewEditor.classList.remove('animate-view');
     } else {
         tabCreate.classList.add('active');
         tabMyPastes.classList.remove('active');
-        
         viewEditor.classList.remove('hidden');
         viewEditor.classList.add('animate-view');
-        
         viewList.classList.add('hidden');
         viewList.classList.remove('animate-view');
-        
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
@@ -82,12 +156,12 @@ tabCreate.addEventListener('click', () => {
     appNameInput.value = '';
     appNameInput.disabled = false;
     jsonInputArea.value = '';
-    setTimeout(autoResizeTextarea, 50); // Reset size for new entry
+    setTimeout(autoResizeTextarea, 50);
     switchTab('editor');
 });
 btnAddNew.addEventListener('click', () => tabCreate.click());
 
-// --- Auth State ---
+// --- 5. Auth State ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUserUid = user.uid;
@@ -102,11 +176,10 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// --- Data Fetching & Rendering ---
+// --- 6. Data Fetching & Rendering ---
 function loadMetadata() {
     if (!currentUserUid) return;
     const metaRef = ref(db, 'api_metadata/' + currentUserUid);
-    
     onValue(metaRef, (snapshot) => {
         currentApps = snapshot.val() || {};
         renderCards(currentApps);
@@ -117,7 +190,6 @@ function renderCards(data) {
     cardsGrid.innerHTML = '';
     const keys = Object.keys(data);
     totalCount.innerText = `Total: ${keys.length} Apps`;
-    
     keys.sort((a, b) => new Date(data[b].updatedAt) - new Date(data[a].updatedAt));
 
     keys.forEach(key => {
@@ -157,19 +229,17 @@ function renderCards(data) {
     attachCardListeners();
 }
 
-// --- Search Filter ---
+// --- 7. Search Filter ---
 searchInput.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const filtered = {};
     for (const key in currentApps) {
-        if (key.toLowerCase().includes(term)) {
-            filtered[key] = currentApps[key];
-        }
+        if (key.toLowerCase().includes(term)) filtered[key] = currentApps[key];
     }
     renderCards(filtered);
 });
 
-// --- Action Listeners ---
+// --- 8. Action Listeners ---
 function attachCardListeners() {
     document.querySelectorAll('.btn-copy').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -210,14 +280,14 @@ function attachCardListeners() {
             get(ref(db, `api_data/${currentUserUid}/${id}`)).then((snapshot) => {
                 if(snapshot.exists()) {
                     jsonInputArea.value = JSON.stringify(snapshot.val(), null, 2);
-                    setTimeout(autoResizeTextarea, 50); // Resize after fetching payload
+                    setTimeout(autoResizeTextarea, 50);
                 }
             });
         });
     });
 }
 
-// --- Save Logic ---
+// --- 9. Save Logic ---
 document.getElementById('saveBtn').addEventListener('click', () => {
     const appName = appNameInput.value.trim();
     const rawJson = jsonInputArea.value;
@@ -249,17 +319,15 @@ document.getElementById('saveBtn').addEventListener('click', () => {
         });
 
     } catch (e) {
-        alert("Syntax Error: Invalid JSON format. Please check your brackets and commas.");
+        alert("Syntax Error: Invalid JSON format.");
     }
 });
 
-// --- Login / Logout ---
+// --- 10. Login / Logout ---
 document.getElementById('loginBtn').addEventListener('click', () => {
     const e = document.getElementById('email').value;
     const p = document.getElementById('password').value;
     signInWithEmailAndPassword(auth, e, p).catch(err => alert("Login failed: " + err.message));
 });
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    signOut(auth);
-});
+document.getElementById('logoutBtn').addEventListener('click', () => { signOut(auth); });
