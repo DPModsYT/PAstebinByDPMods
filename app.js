@@ -159,9 +159,9 @@ tabCreate.addEventListener('click', () => {
 });
 btnAddNew.addEventListener('click', () => tabCreate.click());
 
-// --- 5. Auth State (With Loader Fix) ---
+// --- 5. Auth State (With Bulletproof Loader Fix) ---
 onAuthStateChanged(auth, (user) => {
-    // Hide the loader once Firebase checks your status
+    // 100% guarantee the loader is hidden
     loadingScreen.classList.add('hidden');
     
     if (user) {
@@ -334,10 +334,14 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 document.getElementById('loginBtn').addEventListener('click', () => {
     const e = document.getElementById('email').value;
     const p = document.getElementById('password').value;
-    signInWithEmailAndPassword(auth, e, p).catch(err => alert("Login failed: " + err.message));
+    loadingScreen.classList.remove('hidden'); // Show loader when clicking login
+    signInWithEmailAndPassword(auth, e, p).catch(err => {
+        loadingScreen.classList.add('hidden'); // Hide if login fails
+        alert("Login failed: " + err.message);
+    });
 });
 
 document.getElementById('logoutBtn').addEventListener('click', () => { 
-    loadingScreen.classList.remove('hidden'); // Show loader briefly on logout to prevent flash
+    loadingScreen.classList.remove('hidden'); 
     signOut(auth); 
 });
