@@ -13,7 +13,7 @@
             --danger: #ef4444;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             
             /* Default Blue Theme */
             --accent: #38bdf8;
@@ -53,7 +53,7 @@
             padding: 1.5rem 1rem;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            transition: background 0.6s ease;
+            transition: background 0.5s ease;
         }
 
         /* Particle Background */
@@ -69,12 +69,14 @@
 
         .container { max-width: 900px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
 
+        /* Animations */
         @keyframes fadeSlideUp {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-view { animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
+        /* Glassmorphism */
         .glass {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
@@ -83,58 +85,70 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
-        /* Header */
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; position: relative; z-index: 10; }
-        header h1 { margin: 0; font-size: 1.5rem; color: var(--accent); font-weight: 600; text-shadow: 0 2px 10px rgba(var(--accent), 0.3); transition: color 0.4s; }
+        /* --- Header Alignment Fixes --- */
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 1.5rem; 
+            gap: 1rem; 
+        }
         
-        .user-controls { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; }
+        .header-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+            flex-wrap: wrap; 
+        }
+
+        header h1 { 
+            margin: 0; 
+            font-size: 1.5rem; 
+            color: var(--accent); 
+            font-weight: 600; 
+            text-shadow: 0 2px 10px rgba(var(--accent), 0.2); 
+            transition: color 0.3s; 
+        }
+        
+        .user-controls { 
+            display: flex; 
+            gap: 0.8rem; 
+            align-items: center; 
+            flex-wrap: wrap;
+        }
+        
         .user-badge { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; }
         
-        /* FIXED THEME PICKER FOR MOBILE TOUCH */
         .theme-picker { 
             display: flex; 
-            gap: 12px; /* Wider gap so fingers don't overlap */
+            gap: 8px; 
             align-items: center; 
-            background: rgba(0,0,0,0.3); 
-            padding: 8px 14px; 
-            border-radius: 30px; 
+            background: rgba(0,0,0,0.2); 
+            padding: 6px 12px; 
+            border-radius: 20px; 
             border: 1px solid var(--glass-border); 
-            position: relative;
-            z-index: 50; /* Forces it above everything else */
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
         }
-        
-        .theme-dot { 
-            width: 22px; 
-            height: 22px; 
-            border-radius: 50%; 
-            cursor: pointer; 
-            transition: var(--transition-smooth); 
-            border: 2px solid rgba(255,255,255,0.1); 
-            position: relative;
-        }
-        
-        /* Invisible expanded touch target trick */
-        .theme-dot::after {
-            content: '';
-            position: absolute;
-            top: -12px; right: -12px; bottom: -12px; left: -12px;
-            border-radius: 50%;
-        }
-
-        .theme-dot:active { transform: scale(0.85); }
-        
-        /* Liquid glow animation when selected */
-        .theme-dot.active { 
-            border-color: #ffffff; 
-            transform: scale(1.15); 
-            box-shadow: 0 0 15px currentColor, inset 0 0 8px rgba(255,255,255,0.6); 
-        }
-
+        .theme-dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
+        .theme-dot:hover { transform: scale(1.2); }
+        .theme-dot.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 8px currentColor; }
         .theme-dot[data-color="blue"] { background: #38bdf8; color: #38bdf8; }
         .theme-dot[data-color="red"] { background: #ef4444; color: #ef4444; }
         .theme-dot[data-color="pink"] { background: #ec4899; color: #ec4899; }
         .theme-dot[data-color="green"] { background: #10b981; color: #10b981; }
+
+        .btn-logout {
+            border-color: var(--danger) !important;
+            color: var(--danger) !important;
+            background: rgba(239, 68, 68, 0.05) !important;
+            flex-grow: 0;
+            min-height: 36px;
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+        }
+        .btn-logout:hover, .btn-logout:active {
+            background: var(--danger) !important;
+            color: #fff !important;
+        }
 
         /* Login Screen */
         #loginSection { width: 100%; max-width: 400px; margin: 5vh auto; padding: 2rem 1.5rem; border-radius: 16px; text-align: center; box-sizing: border-box; }
@@ -161,7 +175,7 @@
         .card-header { font-size: 1.15rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: 0.5px; color: #fff; word-break: break-all; }
         .card-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
         .action-btn { background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: var(--text-main); padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 5px; flex-grow: 1; min-height: 40px; }
-        .action-btn:active { background: var(--glass-hover); border-color: rgba(255,255,255,0.3); transform: scale(0.96); }
+        .action-btn:hover { background: var(--glass-hover); border-color: rgba(255,255,255,0.3); }
         .btn-public { background: var(--accent); color: #000; border: none; font-weight: 600; flex-grow: 2; }
         
         .card-meta { display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); padding-top: 1rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.8rem; }
@@ -171,7 +185,7 @@
         #viewEditor { padding: 2rem 1.5rem; border-radius: 16px; }
         .editor-form-group { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
         .input-wrapper { display: flex; flex-direction: column; gap: 0.5rem; }
-        .input-wrapper label { font-size: 0.9rem; color: var(--accent); font-weight: 500; padding-left: 4px; transition: color 0.4s; }
+        .input-wrapper label { font-size: 0.9rem; color: var(--accent); font-weight: 500; padding-left: 4px; transition: color 0.3s; }
         
         #editorSection input, #editorSection textarea { 
             -webkit-appearance: none; 
@@ -189,7 +203,7 @@
             line-height: 1.5;
         }
         
-        #editorSection input::placeholder, #editorSection textarea::placeholder { color: rgba(148, 163, 184, 0.6) !important; }
+        #editorSection input::placeholder, #editorSection textarea::placeholder { color: #94a3b8 !important; }
         
         #editorSection input:focus, #editorSection textarea:focus { 
             border-color: var(--accent) !important; 
@@ -198,8 +212,8 @@
         }
         
         #editorSection textarea { min-height: 200px; resize: none; overflow: hidden; }
+
         .save-btn { background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 1.2rem; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; min-height: 54px; transition: var(--transition-smooth); margin-top: 1rem; }
-        .save-btn:active { transform: scale(0.98); }
 
         .hidden { display: none !important; }
         svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
@@ -207,16 +221,21 @@
         /* Mobile Adjustments */
         @media (max-width: 600px) {
             body { padding: 1rem 0.5rem; }
+            
+            /* The Alignment Fix for Header */
+            header { flex-direction: column; align-items: stretch; gap: 1.2rem; }
+            .header-left { width: 100%; justify-content: space-between; }
+            .user-controls { width: 100%; justify-content: space-between; }
+            .btn-logout { flex-grow: 0; }
+
             .tabs { padding-bottom: 0.5rem; scrollbar-width: none; }
             .tabs::-webkit-scrollbar { display: none; }
-            .add-btn { position: fixed; bottom: 24px; right: 24px; border-radius: 50px; padding: 1.2rem; box-shadow: 0 8px 25px rgba(0,0,0, 0.6); z-index: 100; }
+            .add-btn { position: fixed; bottom: 24px; right: 24px; border-radius: 50px; padding: 1.2rem; box-shadow: 0 8px 25px rgba(0,0,0, 0.4); z-index: 100; }
             .add-btn span { display: none; }
             .add-btn svg { width: 24px; height: 24px; margin: 0; }
             .action-btn { flex-basis: 30%; }
             .btn-public { flex-basis: 100%; margin-top: 0.5rem; }
             #viewEditor { padding: 1.5rem 1rem; }
-            /* Center theme picker easily on small screens */
-            .theme-picker { margin: 0 auto; }
         }
     </style>
 </head>
@@ -233,19 +252,21 @@
     </div>
 
     <div id="appSection" class="hidden">
+        
         <header>
-            <h1>App Manager</h1>
-            
-            <div class="user-controls">
+            <div class="header-left">
+                <h1>App Manager</h1>
                 <div class="theme-picker">
                     <span class="theme-dot active" data-color="blue"></span>
                     <span class="theme-dot" data-color="red"></span>
                     <span class="theme-dot" data-color="pink"></span>
                     <span class="theme-dot" data-color="green"></span>
                 </div>
-
+            </div>
+            
+            <div class="user-controls">
                 <div class="glass user-badge" id="userEmailBadge">admin</div>
-                <button id="logoutBtn" class="action-btn" style="border-color: var(--danger); color: var(--danger); flex-grow: 0; min-height: 36px; padding: 0.4rem 1rem;">Logout</button>
+                <button id="logoutBtn" class="action-btn btn-logout">Logout</button>
             </div>
         </header>
 
@@ -262,7 +283,8 @@
                 <input type="text" id="searchInput" placeholder="Search apps...">
                 <div class="total-count" id="totalCount">Total: 0 Apps</div>
             </div>
-            <div class="grid" id="cardsGrid"></div>
+            <div class="grid" id="cardsGrid">
+                </div>
         </div>
 
         <div id="viewEditor" class="glass hidden" id="editorSection">
