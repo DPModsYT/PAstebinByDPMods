@@ -40,7 +40,7 @@
         #particles-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .container { max-width: 900px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
 
-        /* --- Master Animations --- */
+        /* Animations */
         @keyframes springUp { 0% { opacity: 0; transform: translateY(30px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes scaleOut { to { opacity: 0; transform: scale(0.85); } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
@@ -55,7 +55,7 @@
         .deleting { animation: scaleOut 0.4s var(--spring-easing) forwards !important; pointer-events: none; }
         .error-shake { animation: shake 0.4s ease-in-out; border-color: var(--danger) !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3) !important; }
 
-        /* --- Toast Notification System --- */
+        /* Toast Notifications */
         #toastContainer { position: fixed; bottom: 30px; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 10000; pointer-events: none; padding: 0 20px; box-sizing: border-box; }
         .toast { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); color: #fff; padding: 12px 24px; border-radius: 50px; font-weight: 500; font-size: 0.95rem; border: 1px solid var(--glass-border); box-shadow: 0 15px 35px rgba(0,0,0,0.5); animation: toastEnter 0.5s var(--spring-easing) forwards; display: flex; align-items: center; gap: 8px; text-align: center; }
         .toast.success { border-color: var(--success); color: #a7f3d0; }
@@ -102,7 +102,7 @@
         /* Search Bar */
         .search-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.8rem; transition: var(--transition-smooth); }
         .search-bar:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent), 0.2); transform: translateY(-2px); }
-        .search-bar input { background: transparent !important; border: none !important; color: white !important; outline: none; flex-grow: 1; font-size: 1rem; min-width: 150px; -webkit-appearance: none; }
+        .search-bar input { background: transparent !important; border: none !important; color: white !important; outline: none; flex-grow: 1; font-size: 1rem; min-width: 150px; -webkit-appearance: none; box-shadow: none !important;}
         .search-bar input::placeholder { color: var(--text-muted); transition: color 0.3s; }
         .search-bar input:focus::placeholder { color: transparent; }
         .total-count { color: var(--text-muted); font-size: 0.85rem; white-space: nowrap; }
@@ -121,36 +121,48 @@
         .card-meta { display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); padding-top: 1rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.8rem; }
         .meta-item { display: flex; align-items: center; gap: 6px; }
 
-        /* Editor & Input Fixes (Solves Android White Background Issue) */
+        /* --- PERFECT GLASSMORPHISM INPUT FIXES --- */
         #viewEditor { padding: 2rem 1.5rem; border-radius: 16px; }
         .editor-form-group { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
         .input-wrapper { display: flex; flex-direction: column; gap: 0.5rem; }
         .input-wrapper label { font-size: 0.9rem; color: var(--accent); font-weight: 500; padding-left: 4px; transition: color 0.3s; }
         
-        /* AGGRESSIVE CSS OVERRIDES FOR ANDROID INPUTS */
-        input, textarea { color-scheme: dark; } /* Tells system UI to be dark */
+        /* Strict Webkit Overrides */
+        input, textarea { color-scheme: dark; } 
         
         #editorSection input, #editorSection textarea, #loginSection input { 
             -webkit-appearance: none !important; -moz-appearance: none !important; appearance: none !important;
             width: 100%; padding: 1.2rem; border-radius: 12px; 
-            background-color: rgba(0,0,0,0.4) !important; 
+            background: var(--glass-bg) !important; /* PERFECTLY MATCHES CARDS */
             border: 1px solid var(--glass-border) !important; 
             color: #ffffff !important; 
             font-size: 1rem; font-family: 'Courier New', monospace; box-sizing: border-box; outline: none; 
             transition: var(--transition-smooth); line-height: 1.5; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2) !important;
         }
         
-        /* Stop Autofill from turning boxes white */
+        /* Anti-Autofill Hacks */
         input:-webkit-autofill, textarea:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 50px rgba(15, 23, 42, 0.9) inset !important;
+            -webkit-box-shadow: 0 0 0 50px rgba(15, 23, 42, 0.8) inset !important;
             -webkit-text-fill-color: #ffffff !important;
         }
 
         #editorSection input::placeholder, #editorSection textarea::placeholder, #loginSection input::placeholder { color: #94a3b8 !important; transition: opacity 0.3s; }
-        #editorSection input:focus, #editorSection textarea:focus, #loginSection input:focus { border-color: var(--accent) !important; background-color: rgba(0,0,0,0.6) !important; box-shadow: 0 0 0 3px rgba(var(--accent), 0.15); transform: translateY(-2px); }
-        
-        /* Disabled Input Style (When Editing) */
-        #editorSection input:disabled { background-color: rgba(255,255,255,0.05) !important; color: #64748b !important; border-color: transparent !important; cursor: not-allowed; }
+        #editorSection input:focus, #editorSection textarea:focus, #loginSection input:focus { 
+            border-color: var(--accent) !important; 
+            background: rgba(0,0,0,0.3) !important; 
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 0 0 3px rgba(var(--accent), 0.15) !important; 
+            transform: translateY(-2px); 
+        }
+
+        /* Editing Mode Styling */
+        #editorSection input:disabled { 
+            background: rgba(0,0,0,0.2) !important; 
+            color: var(--text-muted) !important; 
+            border-style: dashed !important; 
+            cursor: not-allowed; 
+            opacity: 0.7;
+        }
 
         #editorSection textarea { min-height: 200px; resize: none; overflow: hidden; }
 
