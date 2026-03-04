@@ -158,11 +158,18 @@ tabCreate.addEventListener('click', () => {
 });
 btnAddNew.addEventListener('click', () => tabCreate.click());
 
-// --- 5. Auth State ---
+// --- 5. Auth State (Updated for ANiK555 formatting) ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUserUid = user.uid;
-        userEmailBadge.innerText = user.email.split('@')[0];
+        
+        let rawName = user.email.split('@')[0];
+        // Capitalization rule
+        if (rawName.toLowerCase() === 'anik555') {
+            rawName = 'ANiK555';
+        }
+        userEmailBadge.innerText = rawName;
+        
         loginSection.classList.add('hidden');
         appSection.classList.remove('hidden');
         loadMetadata();
