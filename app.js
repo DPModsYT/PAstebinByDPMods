@@ -17,7 +17,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// DOM
+// DOM Elements
 const loadingScreen = document.getElementById('loadingScreen');
 const loginSection = document.getElementById('loginSection');
 const appSection = document.getElementById('appSection');
@@ -34,12 +34,12 @@ const editorTitle = document.getElementById('editorTitle');
 const appNameInput = document.getElementById('appName');
 const jsonInputArea = document.getElementById('jsonInput');
 const toastContainer = document.getElementById('toastContainer');
-const saveBtn = document.getElementById('saveBtn'); // Cached the button
+const saveBtn = document.getElementById('saveBtn'); 
 
 let currentUserUid = null;
 let currentApps = {}; 
 
-// --- Custom Animated Toast System ---
+// --- Toast System ---
 function showToast(msg, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -61,7 +61,7 @@ function triggerErrorShake(element) {
     setTimeout(() => element.classList.remove('error-shake'), 400);
 }
 
-// --- Theme Switcher Logic ---
+// --- Theme Logic ---
 const themeDots = document.querySelectorAll('.theme-dot');
 const savedTheme = localStorage.getItem('appTheme') || 'blue';
 document.body.setAttribute('data-theme', savedTheme);
@@ -80,7 +80,7 @@ themeDots.forEach(dot => {
     });
 });
 
-// --- Canvas Particle Background ---
+// --- Particles Background ---
 const canvas = document.getElementById('particles-bg');
 const ctx = canvas.getContext('2d');
 let particlesArray = [];
@@ -122,13 +122,12 @@ function animateParticles() {
 }
 animateParticles();
 
-// --- Textarea Logic ---
+// --- Textarea Auto-Resize ---
 function autoResizeTextarea() { jsonInputArea.style.height = 'auto'; jsonInputArea.style.height = (jsonInputArea.scrollHeight) + 'px'; }
 jsonInputArea.addEventListener('input', autoResizeTextarea);
 
-// --- UI Navigation ---
+// --- UI Navigation & Button Reset Logic ---
 function switchTab(tab) {
-    // Reset animations by forcing reflow
     viewList.classList.remove('animate-view');
     viewEditor.classList.remove('animate-view');
     void viewList.offsetWidth;
@@ -148,16 +147,19 @@ function switchTab(tab) {
 
 tabMyPastes.addEventListener('click', () => switchTab('list'));
 
-tabCreate.addEventListener('click', () => {
+// NEW APP BUTTON (Explicitly sets state to Add)
+function setupNewAppUI() {
     editorTitle.innerText = "Add New App";
-    saveBtn.innerText = "Add to Database"; // Dynamic Button Text
+    saveBtn.innerText = "Add to Database"; // Forcing the correct string
     appNameInput.value = ''; 
     appNameInput.disabled = false; 
     jsonInputArea.value = '';
     setTimeout(autoResizeTextarea, 50);
     switchTab('editor');
-});
-btnAddNew.addEventListener('click', () => tabCreate.click());
+}
+
+tabCreate.addEventListener('click', setupNewAppUI);
+btnAddNew.addEventListener('click', setupNewAppUI);
 
 // --- Auth State ---
 onAuthStateChanged(auth, (user) => {
@@ -239,7 +241,7 @@ function attachCardListeners() {
     document.querySelectorAll('.btn-copy').forEach(btn => {
         btn.addEventListener('click', (e) => {
             navigator.clipboard.writeText(e.target.dataset.url);
-            showToast("Raw Link Copied to Clipboard!", "success");
+            showToast("Raw Link Copied!", "success");
             const originalText = e.target.innerText;
             e.target.innerText = "Copied!";
             e.target.style.borderColor = "var(--accent)";
@@ -267,11 +269,12 @@ function attachCardListeners() {
         });
     });
 
+    // EDIT BUTTON (Explicitly sets state to Update)
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = e.target.dataset.id;
             editorTitle.innerText = `Editing App: ${id}`;
-            saveBtn.innerText = "Update Database"; // Dynamic Button Text Update
+            saveBtn.innerText = "Update Database"; // Forcing the correct string
             appNameInput.value = id; 
             appNameInput.disabled = true; 
             jsonInputArea.value = "Fetching data...";
@@ -287,7 +290,7 @@ function attachCardListeners() {
     });
 }
 
-// --- Save Logic (Dynamic Adding/Updating Text) ---
+// --- Save Logic (Dynamic Load States) ---
 saveBtn.addEventListener('click', () => {
     const appName = appNameInput.value.trim();
     const rawJson = jsonInputArea.value;
@@ -306,7 +309,7 @@ saveBtn.addEventListener('click', () => {
         const parsedJson = JSON.parse(rawJson); 
         const charCount = JSON.stringify(parsedJson).length; 
         
-        // Show loading text based on mode
+        // Dynamic loading string
         saveBtn.innerText = isEditMode ? "Updating..." : "Adding...";
         
         const currentDate = new Date().toLocaleString('en-IN', {
@@ -323,7 +326,8 @@ saveBtn.addEventListener('click', () => {
             if (!snapshot.exists()) updates[`api_metadata/${currentUserUid}/${appName}/views`] = 0;
             
             update(ref(db), updates).then(() => {
-                showToast(isEditMode ? "Database Updated Successfully!" : "Added to Database!", "success");
+                showToast(isEditMode ? "Database Updated!" : "Added to Database!", "success");
+                // Reset button string immediately based on mode
                 saveBtn.innerText = isEditMode ? "Update Database" : "Add to Database";
                 switchTab('list'); 
             }).catch(error => {
