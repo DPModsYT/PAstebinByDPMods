@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JSON App Manager</title>
+    <title>App Manager</title>
     <style>
         /* Base Themes */
         :root {
@@ -78,9 +78,24 @@
         
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Loading Screen */
-        #loadingScreen { text-align: center; margin-top: 25vh; color: var(--accent); font-size: 1.1rem; font-weight: 500; }
-        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--accent); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem auto; }
+        /* FULL SCREEN OVERLAY LOADER - FIXED */
+        #loadingScreen { 
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 9999;
+            color: var(--accent); font-size: 1.2rem; font-weight: 500; letter-spacing: 0.5px;
+        }
+        .spinner { 
+            border: 4px solid rgba(255,255,255,0.1); 
+            border-left-color: var(--accent); 
+            border-radius: 50%; 
+            width: 44px; height: 44px; 
+            animation: spin 1s linear infinite; 
+            margin-bottom: 1rem; 
+        }
 
         /* Glassmorphism */
         .glass {
@@ -113,16 +128,16 @@
         .btn-logout:hover, .btn-logout:active { background: var(--danger) !important; color: #fff !important; }
 
         /* Login Screen - Updated Button Sizing */
-        #loginSection { width: 100%; max-width: 400px; margin: 5vh auto; padding: 2.5rem 1.5rem; border-radius: 16px; text-align: center; box-sizing: border-box; }
+        #loginSection { width: 100%; max-width: 400px; margin: 15vh auto; padding: 2.5rem 1.5rem; border-radius: 16px; text-align: center; box-sizing: border-box; }
         #loginSection input { width: 100%; margin-bottom: 1.2rem; padding: 1rem; border-radius: 8px; background: rgba(0,0,0,0.3) !important; border: 1px solid var(--glass-border) !important; color: white !important; outline: none; box-sizing: border-box; font-size: 1rem; -webkit-appearance: none; }
         
         /* The Fixed, Smaller Login Button */
         #loginSection button { 
-            width: 70%; /* Smaller width */
-            margin: 0 auto; /* Centered */
+            width: 70%; 
+            margin: 0 auto; 
             display: block; 
             padding: 0.8rem 1rem; 
-            border-radius: 50px; /* Pill shaped */
+            border-radius: 50px; 
             background: var(--accent); 
             color: #000; 
             font-weight: bold; 
@@ -197,13 +212,13 @@
 
 <canvas id="particles-bg"></canvas>
 
+<div id="loadingScreen">
+    <div class="spinner"></div>
+    <div>Authenticating...</div>
+</div>
+
 <div class="container">
     
-    <div id="loadingScreen">
-        <div class="spinner"></div>
-        <div>Authenticating...</div>
-    </div>
-
     <div id="loginSection" class="glass hidden">
         <h2 style="margin-top: 0; margin-bottom: 1.5rem;">Admin Access</h2>
         <input type="email" id="email" placeholder="Email">
