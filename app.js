@@ -52,7 +52,7 @@ themeDots.forEach(dot => {
         const color = dot.dataset.color;
         document.body.setAttribute('data-theme', color);
         localStorage.setItem('appTheme', color);
-        updateParticlesColor(color); // Sync particles with theme
+        updateParticlesColor(color); 
     });
 });
 
@@ -60,7 +60,7 @@ themeDots.forEach(dot => {
 const canvas = document.getElementById('particles-bg');
 const ctx = canvas.getContext('2d');
 let particlesArray = [];
-let particleColor = 'rgba(56, 189, 248, 0.5)'; // Default Blue
+let particleColor = 'rgba(56, 189, 248, 0.5)'; 
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -82,13 +82,12 @@ class Particle {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
         this.size = Math.random() * 2 + 0.5;
-        this.speedY = Math.random() * -0.5 - 0.1; // Drift upward
-        this.speedX = (Math.random() - 0.5) * 0.5; // Slight sway
+        this.speedY = Math.random() * -0.5 - 0.1; 
+        this.speedX = (Math.random() - 0.5) * 0.5; 
     }
     update() {
         this.y += this.speedY;
         this.x += this.speedX;
-        // Reset if it goes off top
         if (this.y < 0) {
             this.y = canvas.height;
             this.x = Math.random() * canvas.width;
@@ -104,7 +103,7 @@ class Particle {
 
 function initParticles() {
     particlesArray = [];
-    const numberOfParticles = Math.min(window.innerWidth / 10, 80); // Less particles on mobile
+    const numberOfParticles = Math.min(window.innerWidth / 10, 80); 
     for (let i = 0; i < numberOfParticles; i++) {
         particlesArray.push(new Particle());
     }
@@ -121,14 +120,12 @@ function animateParticles() {
 }
 animateParticles();
 
-
 // --- 3. Auto Resize Textarea Logic ---
 function autoResizeTextarea() {
     jsonInputArea.style.height = 'auto'; 
     jsonInputArea.style.height = (jsonInputArea.scrollHeight) + 'px'; 
 }
 jsonInputArea.addEventListener('input', autoResizeTextarea);
-
 
 // --- 4. UI Navigation Logic ---
 function switchTab(tab) {
@@ -201,13 +198,14 @@ function renderCards(data) {
         card.className = 'card glass animate-view';
         card.innerHTML = `
             <div class="card-header">${key}</div>
+            
             <div class="card-actions">
                 <button class="action-btn btn-visit" onclick="window.open('${rawUrl}', '_blank')">Visit</button>
                 <button class="action-btn btn-edit" data-id="${key}">Edit</button>
                 <button class="action-btn btn-copy" data-url="${rawUrl}">Copy</button>
                 <button class="action-btn btn-delete" data-id="${key}">Delete</button>
-                <button class="action-btn btn-public">Public</button>
             </div>
+            
             <div class="card-meta">
                 <div class="meta-item">
                     <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
