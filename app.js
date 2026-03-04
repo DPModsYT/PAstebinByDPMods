@@ -35,33 +35,54 @@ const viewEditor = document.getElementById('viewEditor');
 const editorTitle = document.getElementById('editorTitle');
 
 // Editor Inputs
-const endpointNameInput = document.getElementById('endpointName');
+const appNameInput = document.getElementById('appName');
 const jsonInputArea = document.getElementById('jsonInput');
 
 let currentUserUid = null;
-let currentEndpoints = {}; // Store fetched metadata for searching
+let currentApps = {}; 
+
+// --- Auto Resize Textarea Logic ---
+function autoResizeTextarea() {
+    jsonInputArea.style.height = 'auto'; // Reset height temporarily
+    jsonInputArea.style.height = (jsonInputArea.scrollHeight) + 'px'; // Set to required height
+}
+
+// Listen for typing or pasting to resize dynamically
+jsonInputArea.addEventListener('input', autoResizeTextarea);
+
 
 // --- UI Navigation Logic ---
 function switchTab(tab) {
     if(tab === 'list') {
         tabMyPastes.classList.add('active');
         tabCreate.classList.remove('active');
+        
         viewList.classList.remove('hidden');
+        viewList.classList.add('animate-view');
+        
         viewEditor.classList.add('hidden');
+        viewEditor.classList.remove('animate-view');
     } else {
         tabCreate.classList.add('active');
         tabMyPastes.classList.remove('active');
+        
         viewEditor.classList.remove('hidden');
+        viewEditor.classList.add('animate-view');
+        
         viewList.classList.add('hidden');
+        viewList.classList.remove('animate-view');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
 tabMyPastes.addEventListener('click', () => switchTab('list'));
 tabCreate.addEventListener('click', () => {
-    editorTitle.innerText = "Create New JSON";
-    endpointNameInput.value = '';
-    endpointNameInput.disabled = false; // Allow renaming for new
+    editorTitle.innerText = "Add New App";
+    appNameInput.value = '';
+    appNameInput.disabled = false;
     jsonInputArea.value = '';
+    setTimeout(autoResizeTextarea, 50); // Reset size for new entry
     switchTab('editor');
 });
 btnAddNew.addEventListener('click', () => tabCreate.click());
@@ -87,17 +108,16 @@ function loadMetadata() {
     const metaRef = ref(db, 'api_metadata/' + currentUserUid);
     
     onValue(metaRef, (snapshot) => {
-        currentEndpoints = snapshot.val() || {};
-        renderCards(currentEndpoints);
+        currentApps = snapshot.val() || {};
+        renderCards(currentApps);
     });
 }
 
 function renderCards(data) {
     cardsGrid.innerHTML = '';
     const keys = Object.keys(data);
-    totalCount.innerText = `Total: ${keys.length} endpoints`;
+    totalCount.innerText = `Total: ${keys.length} Apps`;
     
-    // Sort by newest
     keys.sort((a, b) => new Date(data[b].updatedAt) - new Date(data[a].updatedAt));
 
     keys.forEach(key => {
@@ -106,7 +126,7 @@ function renderCards(data) {
         const rawUrl = `${dbUrl}/api_data/${currentUserUid}/${key}.json`;
 
         const card = document.createElement('div');
-        card.className = 'card glass';
+        card.className = 'card glass animate-view';
         card.innerHTML = `
             <div class="card-header">${key}</div>
             <div class="card-actions">
@@ -141,31 +161,35 @@ function renderCards(data) {
 searchInput.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase();
     const filtered = {};
-    for (const key in currentEndpoints) {
+    for (const key in currentApps) {
         if (key.toLowerCase().includes(term)) {
-            filtered[key] = currentEndpoints[key];
+            filtered[key] = currentApps[key];
         }
     }
     renderCards(filtered);
 });
 
-// --- Action Listeners for dynamically created cards ---
+// --- Action Listeners ---
 function attachCardListeners() {
-    // Copy
     document.querySelectorAll('.btn-copy').forEach(btn => {
         btn.addEventListener('click', (e) => {
             navigator.clipboard.writeText(e.target.dataset.url);
             const originalText = e.target.innerText;
             e.target.innerText = "Copied!";
-            setTimeout(() => e.target.innerText = originalText, 2000);
+            e.target.style.borderColor = "var(--accent)";
+            e.target.style.color = "var(--accent)";
+            setTimeout(() => {
+                e.target.innerText = originalText;
+                e.target.style.borderColor = "var(--glass-border)";
+                e.target.style.color = "var(--text-main)";
+            }, 2000);
         });
     });
 
-    // Delete
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = e.target.dataset.id;
-            if(confirm(`Are you sure you want to delete '${id}'? This cannot be undone.`)) {
+            if(confirm(`Delete '${id}' permanently?`)) {
                 const updates = {};
                 updates[`api_data/${currentUserUid}/${id}`] = null;
                 updates[`api_metadata/${currentUserUid}/${id}`] = null;
@@ -174,19 +198,19 @@ function attachCardListeners() {
         });
     });
 
-    // Edit
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = e.target.dataset.id;
-            editorTitle.innerText = `Editing: ${id}`;
-            endpointNameInput.value = id;
-            endpointNameInput.disabled = true; // Prevent renaming an existing node here
+            editorTitle.innerText = `Editing App: ${id}`;
+            appNameInput.value = id;
+            appNameInput.disabled = true; 
             jsonInputArea.value = "Fetching data...";
             switchTab('editor');
 
             get(ref(db, `api_data/${currentUserUid}/${id}`)).then((snapshot) => {
                 if(snapshot.exists()) {
                     jsonInputArea.value = JSON.stringify(snapshot.val(), null, 2);
+                    setTimeout(autoResizeTextarea, 50); // Resize after fetching payload
                 }
             });
         });
@@ -195,15 +219,15 @@ function attachCardListeners() {
 
 // --- Save Logic ---
 document.getElementById('saveBtn').addEventListener('click', () => {
-    const endpointName = endpointNameInput.value.trim();
+    const appName = appNameInput.value.trim();
     const rawJson = jsonInputArea.value;
 
-    if(!endpointName) return alert("Provide an Endpoint Name.");
-    if (/[.#$\[\]]/.test(endpointName)) return alert("Invalid characters in name.");
+    if(!appName) return alert("Please provide an App Name.");
+    if (/[.#$\[\]]/.test(appName)) return alert("Error: App name cannot contain '.', '#', '$', '[', or ']'");
 
     try {
         const parsedJson = JSON.parse(rawJson); 
-        const charCount = JSON.stringify(parsedJson).length; // Calculate characters
+        const charCount = JSON.stringify(parsedJson).length; 
         
         const currentDate = new Date().toLocaleString('en-IN', {
             day: '2-digit', month: '2-digit', year: 'numeric',
@@ -211,21 +235,21 @@ document.getElementById('saveBtn').addEventListener('click', () => {
         });
 
         const updates = {};
-        updates[`api_data/${currentUserUid}/${endpointName}`] = parsedJson;
-        updates[`api_metadata/${currentUserUid}/${endpointName}/updatedAt`] = currentDate;
-        updates[`api_metadata/${currentUserUid}/${endpointName}/chars`] = charCount;
+        updates[`api_data/${currentUserUid}/${appName}`] = parsedJson;
+        updates[`api_metadata/${currentUserUid}/${appName}/updatedAt`] = currentDate;
+        updates[`api_metadata/${currentUserUid}/${appName}/chars`] = charCount;
         
-        get(ref(db, `api_metadata/${currentUserUid}/${endpointName}/views`)).then((snapshot) => {
-            if (!snapshot.exists()) updates[`api_metadata/${currentUserUid}/${endpointName}/views`] = 0;
+        get(ref(db, `api_metadata/${currentUserUid}/${appName}/views`)).then((snapshot) => {
+            if (!snapshot.exists()) updates[`api_metadata/${currentUserUid}/${appName}/views`] = 0;
             
             update(ref(db), updates).then(() => {
-                alert("JSON deployed securely!");
-                switchTab('list'); // Auto-switch back to list
+                alert("App JSON deployed securely!");
+                switchTab('list'); 
             }).catch(error => alert("Database Error: " + error.message));
         });
 
     } catch (e) {
-        alert("Syntax Error: Invalid JSON format.");
+        alert("Syntax Error: Invalid JSON format. Please check your brackets and commas.");
     }
 });
 
@@ -233,7 +257,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
 document.getElementById('loginBtn').addEventListener('click', () => {
     const e = document.getElementById('email').value;
     const p = document.getElementById('password').value;
-    signInWithEmailAndPassword(auth, e, p).catch(err => alert(err.message));
+    signInWithEmailAndPassword(auth, e, p).catch(err => alert("Login failed: " + err.message));
 });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
