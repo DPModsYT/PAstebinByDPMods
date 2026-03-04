@@ -126,7 +126,8 @@ animateParticles();
 function autoResizeTextarea() { jsonInputArea.style.height = 'auto'; jsonInputArea.style.height = (jsonInputArea.scrollHeight) + 'px'; }
 jsonInputArea.addEventListener('input', autoResizeTextarea);
 
-// --- UI Navigation & Button Reset Logic ---
+
+// --- BULLETPROOF EDITOR NAVIGATION LOGIC ---
 function switchTab(tab) {
     viewList.classList.remove('animate-view');
     viewEditor.classList.remove('animate-view');
@@ -147,10 +148,10 @@ function switchTab(tab) {
 
 tabMyPastes.addEventListener('click', () => switchTab('list'));
 
-// NEW APP BUTTON (Explicitly sets state to Add)
-function setupNewAppUI() {
+// This specifically forces the "ADD" state
+function openEditorInAddMode() {
     editorTitle.innerText = "Add New App";
-    saveBtn.innerText = "Add to Database"; // Forcing the correct string
+    saveBtn.innerText = "Add to Database";
     appNameInput.value = ''; 
     appNameInput.disabled = false; 
     jsonInputArea.value = '';
@@ -158,8 +159,9 @@ function setupNewAppUI() {
     switchTab('editor');
 }
 
-tabCreate.addEventListener('click', setupNewAppUI);
-btnAddNew.addEventListener('click', setupNewAppUI);
+tabCreate.addEventListener('click', openEditorInAddMode);
+btnAddNew.addEventListener('click', openEditorInAddMode);
+
 
 // --- Auth State ---
 onAuthStateChanged(auth, (user) => {
@@ -269,12 +271,14 @@ function attachCardListeners() {
         });
     });
 
-    // EDIT BUTTON (Explicitly sets state to Update)
+    // THIS SPECIFICALLY FORCES THE "UPDATE" STATE
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = e.target.dataset.id;
+            
             editorTitle.innerText = `Editing App: ${id}`;
-            saveBtn.innerText = "Update Database"; // Forcing the correct string
+            saveBtn.innerText = "Update Database"; 
+            
             appNameInput.value = id; 
             appNameInput.disabled = true; 
             jsonInputArea.value = "Fetching data...";
@@ -290,11 +294,11 @@ function attachCardListeners() {
     });
 }
 
-// --- Save Logic (Dynamic Load States) ---
+// --- Save Logic ---
 saveBtn.addEventListener('click', () => {
     const appName = appNameInput.value.trim();
     const rawJson = jsonInputArea.value;
-    const isEditMode = appNameInput.disabled; // Checks if we are editing
+    const isEditMode = appNameInput.disabled; 
 
     if(!appName) {
         showToast("App Name is required", "error");
@@ -309,7 +313,6 @@ saveBtn.addEventListener('click', () => {
         const parsedJson = JSON.parse(rawJson); 
         const charCount = JSON.stringify(parsedJson).length; 
         
-        // Dynamic loading string
         saveBtn.innerText = isEditMode ? "Updating..." : "Adding...";
         
         const currentDate = new Date().toLocaleString('en-IN', {
@@ -327,7 +330,6 @@ saveBtn.addEventListener('click', () => {
             
             update(ref(db), updates).then(() => {
                 showToast(isEditMode ? "Database Updated!" : "Added to Database!", "success");
-                // Reset button string immediately based on mode
                 saveBtn.innerText = isEditMode ? "Update Database" : "Add to Database";
                 switchTab('list'); 
             }).catch(error => {
@@ -337,7 +339,7 @@ saveBtn.addEventListener('click', () => {
         });
 
     } catch (e) {
-        showToast("Invalid JSON syntax. Check brackets/commas.", "error");
+        showToast("Invalid JSON syntax. Check brackets.", "error");
         triggerErrorShake(jsonInputArea);
         saveBtn.innerText = isEditMode ? "Update Database" : "Add to Database";
     }
