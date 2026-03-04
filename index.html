@@ -37,6 +37,9 @@
             -webkit-tap-highlight-color: transparent; transition: background 0.6s ease;
         }
 
+        /* Universal Focus Reset to kill Android white borders */
+        *:focus { outline: 0 !important; -webkit-tap-highlight-color: transparent !important; }
+
         #particles-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .container { max-width: 900px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
 
@@ -53,7 +56,7 @@
         .animate-stagger-2 { animation: springUp 0.5s var(--spring-easing) 0.2s forwards; opacity: 0; }
         .animate-stagger-3 { animation: springUp 0.5s var(--spring-easing) 0.3s forwards; opacity: 0; }
         .deleting { animation: scaleOut 0.4s var(--spring-easing) forwards !important; pointer-events: none; }
-        .error-shake { animation: shake 0.4s ease-in-out; border-color: var(--danger) !important; }
+        .error-shake { animation: shake 0.4s ease-in-out; border-color: var(--danger) !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3) !important; }
 
         /* Toast Notifications */
         #toastContainer { position: fixed; bottom: 30px; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 10000; pointer-events: none; padding: 0 20px; box-sizing: border-box; }
@@ -102,7 +105,7 @@
         /* Search Bar */
         .search-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.8rem; transition: var(--transition-smooth); }
         .search-bar:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent), 0.2); transform: translateY(-2px); }
-        .search-bar input { background-color: transparent !important; border: none !important; color: white !important; outline: none; flex-grow: 1; font-size: 1rem; min-width: 150px; -webkit-appearance: none; box-shadow: none !important;}
+        .search-bar input { background-color: transparent !important; border: none !important; color: white !important; outline: 0 !important; flex-grow: 1; font-size: 1rem; min-width: 150px; -webkit-appearance: none; box-shadow: none !important;}
         .search-bar input::placeholder { color: var(--text-muted); transition: color 0.3s; }
         .search-bar input:focus::placeholder { color: transparent; }
         .total-count { color: var(--text-muted); font-size: 0.85rem; white-space: nowrap; }
@@ -121,13 +124,11 @@
         .card-meta { display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); padding-top: 1rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.8rem; }
         .meta-item { display: flex; align-items: center; gap: 6px; }
 
-        /* --- PERFECT MATTE INPUTS (MATCHING YOUR SCREENSHOT) --- */
+        /* --- BULLETPROOF MATTE INPUTS (DEFEATS ANDROID FORCE DARK) --- */
         #viewEditor { padding: 2rem 1.5rem; border-radius: 16px; }
         .editor-form-group { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
         .input-wrapper { display: flex; flex-direction: column; gap: 0.5rem; }
         .input-wrapper label { font-size: 0.9rem; color: var(--accent); font-weight: 500; padding-left: 4px; transition: color 0.3s; }
-        
-        input, textarea { color-scheme: dark; } 
         
         #editorSection input, #editorSection textarea, #loginSection input { 
             -webkit-appearance: none !important; 
@@ -137,44 +138,52 @@
             padding: 1.2rem; 
             border-radius: 12px; 
             
-            /* Clean Matte Dark Background */
-            background: rgba(0, 0, 0, 0.3) !important; 
+            /* SOLID HEX COLOR prevents Android from trying to invert a transparent background */
+            background-color: #1e293b !important; 
             
-            /* No visible border by default to match screenshot */
-            border: 1px solid transparent !important; 
+            /* Very subtle border, completely overwrites Android defaults */
+            border: 1px solid #334155 !important; 
             
             color: #ffffff !important; 
             font-size: 1rem; 
             font-family: 'Courier New', monospace; 
             box-sizing: border-box; 
-            outline: none; 
+            
+            /* FORCES OUTLINE AND BOX SHADOW TO ZERO */
+            outline: 0 !important; 
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            
             transition: var(--transition-smooth); 
             line-height: 1.5; 
-            box-shadow: none !important;
         }
         
-        /* Keep autofill from ruining the colors */
+        /* Keep autofill from turning boxes white */
         input:-webkit-autofill, textarea:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 50px #0f172a inset !important;
+            -webkit-box-shadow: 0 0 0 50px #1e293b inset !important;
             -webkit-text-fill-color: #ffffff !important;
         }
 
         #editorSection input::placeholder, #editorSection textarea::placeholder, #loginSection input::placeholder { 
-            color: rgba(255, 255, 255, 0.3) !important; /* Softer placeholder text */
+            color: #64748b !important; 
             transition: opacity 0.3s; 
         }
         
+        /* FOCUS STATE: Custom accent border, still NO white outline */
         #editorSection input:focus, #editorSection textarea:focus, #loginSection input:focus { 
             border-color: var(--accent) !important; 
-            background: rgba(0,0,0,0.4) !important; 
-            box-shadow: 0 0 0 2px rgba(var(--accent), 0.2) !important; 
-            transform: translateY(-2px); 
+            background-color: #0f172a !important; 
+            outline: 0 !important;
+            /* Replace default white outline with our custom theme color */
+            box-shadow: 0 0 0 1px var(--accent) !important; 
+            -webkit-box-shadow: 0 0 0 1px var(--accent) !important; 
         }
 
         /* Editing Mode Disabled State */
         #editorSection input:disabled { 
-            background: rgba(0,0,0,0.15) !important;
-            color: rgba(255, 255, 255, 0.4) !important; 
+            background-color: #0f172a !important;
+            color: #475569 !important; 
+            border-style: dashed !important; 
             cursor: not-allowed; 
         }
 
