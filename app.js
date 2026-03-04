@@ -148,10 +148,10 @@ function switchTab(tab) {
 
 tabMyPastes.addEventListener('click', () => switchTab('list'));
 
-// This specifically forces the "ADD" state
+// THIS ALWAYS FORCES "ADD TO DATABASE" STATE
 function openEditorInAddMode() {
     editorTitle.innerText = "Add New App";
-    saveBtn.innerText = "Add to Database";
+    saveBtn.innerText = "Add to Database"; 
     appNameInput.value = ''; 
     appNameInput.disabled = false; 
     jsonInputArea.value = '';
@@ -271,7 +271,7 @@ function attachCardListeners() {
         });
     });
 
-    // THIS SPECIFICALLY FORCES THE "UPDATE" STATE
+    // THIS ALWAYS FORCES "UPDATE DATABASE" STATE
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const id = e.target.dataset.id;
@@ -330,6 +330,7 @@ saveBtn.addEventListener('click', () => {
             
             update(ref(db), updates).then(() => {
                 showToast(isEditMode ? "Database Updated!" : "Added to Database!", "success");
+                // Immediately fix string text
                 saveBtn.innerText = isEditMode ? "Update Database" : "Add to Database";
                 switchTab('list'); 
             }).catch(error => {
