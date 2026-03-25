@@ -1,0 +1,17 @@
+{
+  "Update": {
+    "Show": false,
+    "ForceUpdate": false,
+    "Version": "v21",
+    "Changelog": "What's New:\n\n• Bug Fixed\n• Base Update\n• Ui Improvements",
+    "GithubLink": "https://github.com/your-repo",
+    "UpdateLink": "https://t.me/DPMods"
+  },
+  "Welcome": {
+    "Show": true,
+    "Title": "Welcome to PawGram 🐾",
+    "Message": "PAWGRAM IS AN INSTAGRAM ALPHA FORK WITH BUILT-IN IOS EMOJIS AND AD FREE EXPERIENCE WITH LIMITLESS CUSTOMISATIONS!",
+    "GithubLink": "https://github.com/your-repo",
+    "CommunityLink": "https://t.me/DPMods"
+  }
+}
